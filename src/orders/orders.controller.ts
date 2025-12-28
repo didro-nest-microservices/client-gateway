@@ -8,17 +8,20 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { PaginationDto } from 'src/common';
 import { NATS_SERVICE } from 'src/config';
+import { AuthGuard } from '../auth/guards/auth.guard';
 import { CreateOrderDto, OrderPaginationDto, StatusDto } from './dto';
 
 @Controller('orders')
 export class OrdersController {
   constructor(@Inject(NATS_SERVICE) private readonly client: ClientProxy) {}
 
+  @UseGuards(AuthGuard)
   @Post()
   async create(@Body() createOrderDto: CreateOrderDto) {
     try {
@@ -70,6 +73,7 @@ export class OrdersController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Patch(':id')
   changeStatus(
     @Param('id', ParseUUIDPipe) id: string,
